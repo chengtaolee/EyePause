@@ -286,9 +286,11 @@ final class AppModel: ObservableObject {
             systemSignal.manualMeetingUntil = nil
         }
         updateMeetingStatus(now: now)
-        publishWidgetSnapshot(now: now)
 
-        guard currentExercise == nil else { return }
+        guard currentExercise == nil else {
+            publishWidgetSnapshot(now: now)
+            return
+        }
         let previousDay = stats.today.day
         reminderEngine.meetingDetector = systemSignal.meetingDetector(now: now)
         let events = reminderEngine.advance(to: now, stats: &stats)
@@ -298,6 +300,7 @@ final class AppModel: ObservableObject {
         }
         handle(events)
         markDirtyIfStatsChanged(events: events, previousDay: previousDay)
+        publishWidgetSnapshot(now: now)
         save()
     }
 
