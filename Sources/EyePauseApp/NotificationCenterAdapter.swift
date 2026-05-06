@@ -69,9 +69,9 @@ final class NotificationCenterAdapter: NSObject {
         }
 
         let actions = [
-            UNNotificationAction(identifier: ActionIdentifier.startBreak, title: startBreakTitle, options: []),
+            UNNotificationAction(identifier: ActionIdentifier.startBreak, title: startBreakTitle, options: [.foreground]),
             UNNotificationAction(identifier: ActionIdentifier.delayFiveMinutes, title: delayTitle, options: []),
-            UNNotificationAction(identifier: ActionIdentifier.skip, title: skipTitle, options: [])
+            UNNotificationAction(identifier: ActionIdentifier.skip, title: skipTitle, options: [.destructive])
         ]
         let category = UNNotificationCategory(
             identifier: ActionIdentifier.category,
