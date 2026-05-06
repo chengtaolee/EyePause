@@ -5,6 +5,7 @@ import SwiftUI
 final class WindowCoordinator {
     private var reminderWindow: NSWindow?
     private var settingsWindow: NSWindow?
+    private var onboardingWindow: NSWindow?
 
     func presentReminderWindow(model: AppModel, isForcedPresentation: Bool) {
         let frame = reminderWindowFrame(isForcedPresentation: isForcedPresentation)
@@ -31,8 +32,24 @@ final class WindowCoordinator {
         show(window)
     }
 
+    func presentOnboardingWindow(model: AppModel) {
+        let window = onboardingWindow ?? makeWindow(
+            title: model.text(.onboardingTitle),
+            size: NSSize(width: 460, height: 420),
+            level: .normal
+        )
+        onboardingWindow = window
+        window.title = model.text(.onboardingTitle)
+        window.contentView = NSHostingView(rootView: OnboardingView(model: model))
+        show(window)
+    }
+
     func dismissReminderWindow() {
         reminderWindow?.orderOut(nil)
+    }
+
+    func dismissOnboardingWindow() {
+        onboardingWindow?.orderOut(nil)
     }
 
     private func makeWindow(title: String, size: NSSize, level: NSWindow.Level) -> NSWindow {

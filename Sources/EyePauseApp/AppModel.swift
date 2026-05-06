@@ -61,6 +61,7 @@ final class AppModel: ObservableObject {
         installShortcutMonitors()
         installWorkspaceObservers()
         startTimer()
+        showOnboardingIfNeeded()
     }
 
     deinit {
@@ -332,6 +333,17 @@ final class AppModel: ObservableObject {
         presentSettingsWindow()
     }
 
+    func requestNotificationPermissionFromOnboarding() {
+        requestNotificationPermission()
+    }
+
+    func completeOnboarding() {
+        settings.hasCompletedOnboarding = true
+        markDirty()
+        save()
+        dismissOnboardingWindow()
+    }
+
     func startRecordingShortcut() {
         shortcutController.isRecording = true
         isRecordingShortcut = true
@@ -507,6 +519,11 @@ final class AppModel: ObservableObject {
         }
     }
 
+    private func showOnboardingIfNeeded() {
+        guard !settings.hasCompletedOnboarding else { return }
+        presentOnboardingWindow()
+    }
+
     private func updateMeetingStatus(now: Date) {
         let detector = systemSignal.meetingDetector(now: now)
         if let until = systemSignal.manualMeetingUntil, until > now {
@@ -566,7 +583,15 @@ final class AppModel: ObservableObject {
         windowCoordinator.presentSettingsWindow(model: self)
     }
 
+    private func presentOnboardingWindow() {
+        windowCoordinator.presentOnboardingWindow(model: self)
+    }
+
     private func dismissReminderWindow() {
         windowCoordinator.dismissReminderWindow()
+    }
+
+    private func dismissOnboardingWindow() {
+        windowCoordinator.dismissOnboardingWindow()
     }
 }

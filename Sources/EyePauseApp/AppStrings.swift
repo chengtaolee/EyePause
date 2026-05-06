@@ -72,6 +72,9 @@ enum AppString: String, Sendable {
     case longBreakReady
     case systemNotes
     case notifications
+    case onboardingTitle
+    case onboardingEnableNotifications
+    case onboardingComplete
     case notificationGranted
     case notificationDenied
     case notificationDevelopmentFallback
@@ -162,6 +165,9 @@ struct AppStrings {
             .longBreakReady: "Long break ready",
             .systemNotes: "System Notes",
             .notifications: "Notifications",
+            .onboardingTitle: "Set up EyePause",
+            .onboardingEnableNotifications: "Enable Notifications",
+            .onboardingComplete: "Start Using EyePause",
             .notificationGranted: "System notifications are enabled.",
             .notificationDenied: "System notifications are not enabled yet.",
             .notificationDevelopmentFallback: "SwiftPM development runs use the prominent reminder window fallback.",
@@ -245,6 +251,9 @@ struct AppStrings {
             .longBreakReady: "可以進行長休息",
             .systemNotes: "系統說明",
             .notifications: "通知",
+            .onboardingTitle: "設定 EyePause",
+            .onboardingEnableNotifications: "啟用通知",
+            .onboardingComplete: "開始使用 EyePause",
             .notificationGranted: "系統通知已啟用。",
             .notificationDenied: "尚未啟用系統通知。",
             .notificationDevelopmentFallback: "SwiftPM 開發執行會改用醒目的提醒視窗。",
@@ -328,6 +337,9 @@ struct AppStrings {
             .longBreakReady: "可以进行长休息",
             .systemNotes: "系统说明",
             .notifications: "通知",
+            .onboardingTitle: "设置 EyePause",
+            .onboardingEnableNotifications: "启用通知",
+            .onboardingComplete: "开始使用 EyePause",
             .notificationGranted: "系统通知已启用。",
             .notificationDenied: "尚未启用系统通知。",
             .notificationDevelopmentFallback: "SwiftPM 开发运行会改用醒目的提醒窗口。",
@@ -411,6 +423,9 @@ struct AppStrings {
             .longBreakReady: "長めの休憩が可能",
             .systemNotes: "システムについて",
             .notifications: "通知",
+            .onboardingTitle: "EyePause を設定",
+            .onboardingEnableNotifications: "通知を有効にする",
+            .onboardingComplete: "EyePause を使い始める",
             .notificationGranted: "システム通知が有効です。",
             .notificationDenied: "システム通知はまだ有効になっていません。",
             .notificationDevelopmentFallback: "SwiftPM での開発実行では目立つ通知ウィンドウを代替表示します。",
@@ -494,6 +509,9 @@ struct AppStrings {
             .longBreakReady: "긴 휴식 가능",
             .systemNotes: "시스템 안내",
             .notifications: "알림",
+            .onboardingTitle: "EyePause 설정",
+            .onboardingEnableNotifications: "알림 켜기",
+            .onboardingComplete: "EyePause 시작하기",
             .notificationGranted: "시스템 알림이 활성화되었습니다.",
             .notificationDenied: "시스템 알림이 아직 활성화되지 않았습니다.",
             .notificationDevelopmentFallback: "SwiftPM 개발 실행에서는 눈에 띄는 알림 창으로 대체합니다.",
