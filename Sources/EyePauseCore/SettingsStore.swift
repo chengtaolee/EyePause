@@ -1,0 +1,177 @@
+import Foundation
+
+public enum ReminderInterval: Int, CaseIterable, Codable, Equatable, Identifiable, Sendable {
+    case twentyMinutes = 20
+    case twentyFiveMinutes = 25
+    case thirtyMinutes = 30
+    case fortyFiveMinutes = 45
+
+    public var id: Int { rawValue }
+    public var seconds: TimeInterval { TimeInterval(rawValue * 60) }
+    public var title: String { "\(rawValue) min" }
+
+    public func title(language: AppLanguage) -> String {
+        language.minutesText(rawValue)
+    }
+}
+
+public enum AppLanguage: String, CaseIterable, Codable, Equatable, Identifiable, Sendable {
+    case english
+    case traditionalChinese
+    case simplifiedChinese
+    case japanese
+    case korean
+
+    public var id: String { rawValue }
+
+    public var displayName: String {
+        switch self {
+        case .english:
+            return "English"
+        case .traditionalChinese:
+            return "繁體中文"
+        case .simplifiedChinese:
+            return "简体中文"
+        case .japanese:
+            return "日本語"
+        case .korean:
+            return "한국어"
+        }
+    }
+
+    public func minutesText(_ minutes: Int) -> String {
+        switch self {
+        case .english:
+            return "\(minutes) min"
+        case .traditionalChinese:
+            return "\(minutes)分鐘"
+        case .simplifiedChinese:
+            return "\(minutes)分钟"
+        case .japanese:
+            return "\(minutes)分"
+        case .korean:
+            return "\(minutes)분"
+        }
+    }
+}
+
+public enum ExerciseDuration: Int, CaseIterable, Codable, Equatable, Identifiable, Sendable {
+    case twentySeconds = 20
+    case thirtySeconds = 30
+    case fortyFiveSeconds = 45
+    case sixtySeconds = 60
+
+    public var id: Int { rawValue }
+
+    public func title(language: AppLanguage) -> String {
+        switch language {
+        case .english:
+            return "\(rawValue) sec"
+        case .traditionalChinese, .simplifiedChinese, .japanese:
+            return "\(rawValue)秒"
+        case .korean:
+            return "\(rawValue)초"
+        }
+    }
+}
+
+public enum LongBreakDuration: Int, CaseIterable, Codable, Equatable, Identifiable, Sendable {
+    case twoMinutes = 2
+    case threeMinutes = 3
+    case fiveMinutes = 5
+
+    public var id: Int { rawValue }
+    public var seconds: Int { rawValue * 60 }
+
+    public func title(language: AppLanguage) -> String {
+        language.minutesText(rawValue)
+    }
+}
+
+public enum KeyboardShortcutModifier: String, Codable, Equatable, CaseIterable, Sendable {
+    case control
+    case option
+    case shift
+    case command
+}
+
+public struct KeyboardShortcutSetting: Codable, Equatable, Sendable {
+    public var key: String
+    public var modifiers: [KeyboardShortcutModifier]
+
+    public init(key: String = "", modifiers: [KeyboardShortcutModifier] = []) {
+        self.key = key
+        self.modifiers = Self.normalized(modifiers)
+    }
+
+    public var isConfigured: Bool {
+        !key.isEmpty && !modifiers.isEmpty
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case key
+        case modifiers
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.key = try container.decode(String.self, forKey: .key)
+        if let modifiers = try? container.decode([KeyboardShortcutModifier].self, forKey: .modifiers) {
+            self.modifiers = Self.normalized(modifiers)
+        } else {
+            let legacyFlags = try container.decode(Int.self, forKey: .modifiers)
+            self.modifiers = Self.modifiers(fromLegacyFlags: legacyFlags)
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(key, forKey: .key)
+        try container.encode(modifiers, forKey: .modifiers)
+    }
+
+    private static func normalized(_ modifiers: [KeyboardShortcutModifier]) -> [KeyboardShortcutModifier] {
+        KeyboardShortcutModifier.allCases.filter { modifiers.contains($0) }
+    }
+
+    private static func modifiers(fromLegacyFlags flags: Int) -> [KeyboardShortcutModifier] {
+        var modifiers: [KeyboardShortcutModifier] = []
+        if flags & (1 << 18) != 0 { modifiers.append(.control) }
+        if flags & (1 << 19) != 0 { modifiers.append(.option) }
+        if flags & (1 << 17) != 0 { modifiers.append(.shift) }
+        if flags & (1 << 20) != 0 { modifiers.append(.command) }
+        return modifiers
+    }
+}
+
+public struct SettingsStore: Codable, Equatable, Sendable {
+    public var interval: ReminderInterval
+    public var isForcedModeEnabled: Bool
+    public var launchAtLoginEnabled: Bool
+    public var language: AppLanguage
+    public var exerciseDuration: ExerciseDuration
+    public var longBreakDuration: LongBreakDuration
+    public var startBreakShortcut: KeyboardShortcutSetting
+
+    public init(
+        interval: ReminderInterval = .twentyFiveMinutes,
+        isForcedModeEnabled: Bool = false,
+        launchAtLoginEnabled: Bool = false,
+        language: AppLanguage = .english,
+        exerciseDuration: ExerciseDuration = .thirtySeconds,
+        longBreakDuration: LongBreakDuration = .threeMinutes,
+        startBreakShortcut: KeyboardShortcutSetting = KeyboardShortcutSetting()
+    ) {
+        self.interval = interval
+        self.isForcedModeEnabled = isForcedModeEnabled
+        self.launchAtLoginEnabled = launchAtLoginEnabled
+        self.language = language
+        self.exerciseDuration = exerciseDuration
+        self.longBreakDuration = longBreakDuration
+        self.startBreakShortcut = startBreakShortcut
+    }
+
+    public func breakDurationSeconds(isLongBreak: Bool) -> Int {
+        isLongBreak ? longBreakDuration.seconds : exerciseDuration.rawValue
+    }
+}

@@ -1,0 +1,67 @@
+import Foundation
+import XCTest
+@testable import EyePauseCore
+
+final class PersistenceTests: XCTestCase {
+    func testSnapshotRoundTripsThroughKeyValueStore() throws {
+        let memory = MemoryKeyValueStore()
+        let persistence = PersistenceStore(key: "test", store: memory)
+        var stats = StatsStore(today: Date(timeIntervalSince1970: 0))
+        stats.recordCompletedBreak(now: Date(timeIntervalSince1970: 0))
+        let snapshot = AppSnapshot(
+            settings: SettingsStore(interval: .thirtyMinutes, isForcedModeEnabled: true),
+            stats: stats
+        )
+
+        try persistence.save(snapshot)
+        let loaded = persistence.load()
+
+        XCTAssertEqual(loaded.settings.interval, .thirtyMinutes)
+        XCTAssertTrue(loaded.settings.isForcedModeEnabled)
+        XCTAssertEqual(loaded.stats.today.completedCount, 1)
+    }
+
+    func testSaveWritesVersionedEnvelope() throws {
+        let memory = MemoryKeyValueStore()
+        let key = "test"
+        let persistence = PersistenceStore(key: key, store: memory)
+
+        try persistence.save(AppSnapshot())
+
+        let data = try XCTUnwrap(memory.data(forKey: key))
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(json["schemaVersion"] as? Int, 1)
+        XCTAssertNotNil(json["snapshot"])
+    }
+
+    func testSaveEncodingFailureDoesNotOverwriteExistingSnapshot() throws {
+        enum EncodingFailure: Error {
+            case failed
+        }
+
+        let memory = MemoryKeyValueStore()
+        let key = "test"
+        let existingData = Data("existing".utf8)
+        memory.set(existingData, forKey: key)
+        let persistence = PersistenceStore(
+            key: key,
+            store: memory,
+            encode: { _ in throw EncodingFailure.failed }
+        )
+
+        XCTAssertThrowsError(try persistence.save(AppSnapshot()))
+        XCTAssertEqual(memory.data(forKey: key), existingData)
+    }
+}
+
+private final class MemoryKeyValueStore: KeyValueStore {
+    private var values: [String: Data] = [:]
+
+    func data(forKey key: String) -> Data? {
+        values[key]
+    }
+
+    func set(_ value: Data?, forKey key: String) {
+        values[key] = value
+    }
+}
