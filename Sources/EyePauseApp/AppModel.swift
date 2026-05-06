@@ -57,6 +57,7 @@ final class AppModel: ObservableObject {
         )
         self.state = reminderEngine.state
         requestNotificationPermission()
+        configureNotificationActions()
         installShortcutMonitors()
         installWorkspaceObservers()
         startTimer()
@@ -178,6 +179,7 @@ final class AppModel: ObservableObject {
         markDirty()
         save()
         updateMeetingStatus(now: Date())
+        configureNotificationActions()
     }
 
     func setExerciseDuration(_ duration: ExerciseDuration) {
@@ -303,6 +305,26 @@ final class AppModel: ObservableObject {
             save()
         } else {
             skipError = text(.codeMismatch)
+        }
+    }
+
+    func skipCurrentReminderFromNotification() {
+        guard currentExercise == nil else { return }
+
+        if isForcedPresentation {
+            presentReminderWindow()
+            return
+        }
+
+        switch state {
+        case .due, .escalated:
+            reminderEngine.skip(now: Date(), stats: &stats)
+            state = reminderEngine.state
+            dismissReminderWindow()
+            markDirty()
+            save()
+        case .active, .exerciseRunning, .paused, .meetingSuppressed, .forced:
+            break
         }
     }
 
@@ -456,6 +478,23 @@ final class AppModel: ObservableObject {
     private func requestNotificationPermission() {
         notificationAdapter.requestPermission { [weak self] granted in
             self?.isNotificationPermissionGranted = granted
+        }
+    }
+
+    private func configureNotificationActions() {
+        notificationAdapter.configureActions(
+            startBreakTitle: text(.startBreakNow),
+            delayTitle: text(.delayFiveMinutes),
+            skipTitle: text(.skip)
+        ) { [weak self] action in
+            switch action {
+            case .startBreak:
+                self?.startBreakNow()
+            case .delayFiveMinutes:
+                self?.delayCurrentReminder()
+            case .skip:
+                self?.skipCurrentReminderFromNotification()
+            }
         }
     }
 
