@@ -31,7 +31,7 @@ final class AppModel: ObservableObject {
     private let notificationAdapter = NotificationCenterAdapter()
     private var longBreakPlanner = LongBreakPlanner()
     private var timer: Timer?
-    private var wakeObserver: NSObjectProtocol?
+    private var workspaceObservers: [NSObjectProtocol] = []
     private var currentBreakIsLong = false
     private var needsSave = false
 
@@ -66,8 +66,8 @@ final class AppModel: ObservableObject {
         MainActor.assumeIsolated {
             timer?.invalidate()
             shortcutController.invalidate()
-            if let wakeObserver {
-                NSWorkspace.shared.notificationCenter.removeObserver(wakeObserver)
+            for observer in workspaceObservers {
+                NSWorkspace.shared.notificationCenter.removeObserver(observer)
             }
         }
     }
@@ -380,20 +380,29 @@ final class AppModel: ObservableObject {
     }
 
     private func installWorkspaceObservers() {
-        wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(
-            forName: NSWorkspace.didWakeNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            Task { @MainActor in
-                self?.handleSystemDidWake(now: Date())
+        let notificationCenter = NSWorkspace.shared.notificationCenter
+        let names: [NSNotification.Name] = [
+            NSWorkspace.willSleepNotification,
+            NSWorkspace.didWakeNotification,
+            NSWorkspace.sessionDidResignActiveNotification,
+            NSWorkspace.sessionDidBecomeActiveNotification
+        ]
+
+        workspaceObservers = names.map { name in
+            notificationCenter.addObserver(
+                forName: name,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                Task { @MainActor in
+                    self?.handleSystemInterruption(now: Date())
+                }
             }
         }
     }
 
-    private func handleSystemDidWake(now: Date) {
-        stats.rolloverIfNeeded(now: now)
-        stats.resetActiveWorkStart(now: now)
+    private func handleSystemInterruption(now: Date) {
+        stats.recordSystemInterruption(now: now)
         markDirty()
         save()
     }
