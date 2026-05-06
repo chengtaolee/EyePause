@@ -180,11 +180,13 @@ final class AppModel: ObservableObject {
     }
 
     func setLanguage(_ language: AppLanguage) {
+        let now = Date()
         settings.language = language
         markDirty()
         save()
-        updateMeetingStatus(now: Date())
+        updateMeetingStatus(now: now)
         configureNotificationActions()
+        publishWidgetSnapshot(now: now)
     }
 
     func setExerciseDuration(_ duration: ExerciseDuration) {
@@ -284,6 +286,7 @@ final class AppModel: ObservableObject {
             systemSignal.manualMeetingUntil = nil
         }
         updateMeetingStatus(now: now)
+        publishWidgetSnapshot(now: now)
 
         guard currentExercise == nil else { return }
         let previousDay = stats.today.day
@@ -295,7 +298,6 @@ final class AppModel: ObservableObject {
         }
         handle(events)
         markDirtyIfStatsChanged(events: events, previousDay: previousDay)
-        publishWidgetSnapshot(now: now)
         save()
     }
 
@@ -466,6 +468,8 @@ final class AppModel: ObservableObject {
             remainingExerciseSeconds = max(remainingExerciseSeconds - 1, 0)
             if remainingExerciseSeconds == 0 {
                 completeExercise()
+            } else {
+                publishWidgetSnapshot(now: now)
             }
             return
         }
