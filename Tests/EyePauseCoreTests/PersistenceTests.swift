@@ -78,6 +78,44 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(loaded.stats.today.skippedCount, 1)
     }
 
+    func testLoadOlderMinimalSnapshotDefaultsNewSettingsAndStatsFields() throws {
+        let memory = MemoryKeyValueStore()
+        let key = "test"
+        let day = Date(timeIntervalSince1970: 0)
+        let snapshot: [String: Any] = [
+            "settings": [
+                "interval": 30,
+                "isForcedModeEnabled": true,
+                "launchAtLoginEnabled": false,
+                "language": "traditionalChinese"
+            ],
+            "stats": [
+                "today": [
+                    "day": day.timeIntervalSinceReferenceDate,
+                    "completedCount": 2,
+                    "skippedCount": 1,
+                    "meetingSuppressedCount": 0
+                ],
+                "sevenDayTrend": []
+            ]
+        ]
+        memory.set(try JSONSerialization.data(withJSONObject: snapshot), forKey: key)
+        let persistence = PersistenceStore(key: key, store: memory)
+
+        let loaded = persistence.load()
+
+        XCTAssertEqual(loaded.settings.interval, .thirtyMinutes)
+        XCTAssertTrue(loaded.settings.isForcedModeEnabled)
+        XCTAssertEqual(loaded.settings.language, .traditionalChinese)
+        XCTAssertEqual(loaded.settings.exerciseDuration, .thirtySeconds)
+        XCTAssertEqual(loaded.settings.longBreakDuration, .threeMinutes)
+        XCTAssertFalse(loaded.settings.startBreakShortcut.isConfigured)
+        XCTAssertFalse(loaded.settings.hasCompletedOnboarding)
+        XCTAssertEqual(loaded.stats.today.completedCount, 2)
+        XCTAssertEqual(loaded.stats.today.skippedCount, 1)
+        XCTAssertEqual(loaded.stats.activeWorkStartedAt, loaded.stats.today.day)
+    }
+
     func testSaveEncodingFailureDoesNotOverwriteExistingSnapshot() throws {
         enum EncodingFailure: Error {
             case failed

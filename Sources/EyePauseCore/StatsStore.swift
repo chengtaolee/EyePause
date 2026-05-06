@@ -7,6 +7,13 @@ public struct DailyStats: Codable, Equatable, Identifiable, Sendable {
     public var skippedCount: Int
     public var meetingSuppressedCount: Int
 
+    private enum CodingKeys: String, CodingKey {
+        case day
+        case completedCount
+        case skippedCount
+        case meetingSuppressedCount
+    }
+
     public init(
         day: Date,
         completedCount: Int = 0,
@@ -18,6 +25,14 @@ public struct DailyStats: Codable, Equatable, Identifiable, Sendable {
         self.skippedCount = skippedCount
         self.meetingSuppressedCount = meetingSuppressedCount
     }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.day = Calendar.current.startOfDay(for: try container.decode(Date.self, forKey: .day))
+        self.completedCount = try container.decodeIfPresent(Int.self, forKey: .completedCount) ?? 0
+        self.skippedCount = try container.decodeIfPresent(Int.self, forKey: .skippedCount) ?? 0
+        self.meetingSuppressedCount = try container.decodeIfPresent(Int.self, forKey: .meetingSuppressedCount) ?? 0
+    }
 }
 
 public struct StatsStore: Codable, Equatable, Sendable {
@@ -25,11 +40,25 @@ public struct StatsStore: Codable, Equatable, Sendable {
     public private(set) var sevenDayTrend: [DailyStats]
     public var activeWorkStartedAt: Date
 
+    private enum CodingKeys: String, CodingKey {
+        case today
+        case sevenDayTrend
+        case activeWorkStartedAt
+    }
+
     public init(today: Date = Date(), sevenDayTrend: [DailyStats] = []) {
         let todayStats = DailyStats(day: today)
         self.today = todayStats
         self.sevenDayTrend = sevenDayTrend.isEmpty ? [todayStats] : sevenDayTrend
         self.activeWorkStartedAt = today
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.today = try container.decode(DailyStats.self, forKey: .today)
+        let trend = try container.decodeIfPresent([DailyStats].self, forKey: .sevenDayTrend) ?? []
+        self.sevenDayTrend = trend.isEmpty ? [today] : trend
+        self.activeWorkStartedAt = try container.decodeIfPresent(Date.self, forKey: .activeWorkStartedAt) ?? today.day
     }
 
     public mutating func recordCompletedBreak(now: Date = Date()) {

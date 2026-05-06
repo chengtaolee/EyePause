@@ -189,11 +189,11 @@ public struct SettingsStore: Codable, Equatable, Sendable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.interval = try container.decode(ReminderInterval.self, forKey: .interval)
         self.isForcedModeEnabled = try container.decode(Bool.self, forKey: .isForcedModeEnabled)
-        self.launchAtLoginEnabled = try container.decode(Bool.self, forKey: .launchAtLoginEnabled)
-        self.language = try container.decode(AppLanguage.self, forKey: .language)
-        self.exerciseDuration = try container.decode(ExerciseDuration.self, forKey: .exerciseDuration)
-        self.longBreakDuration = try container.decode(LongBreakDuration.self, forKey: .longBreakDuration)
-        self.startBreakShortcut = try container.decode(KeyboardShortcutSetting.self, forKey: .startBreakShortcut)
+        self.launchAtLoginEnabled = try container.decodeIfPresent(Bool.self, forKey: .launchAtLoginEnabled) ?? false
+        self.language = try container.decodeIfPresent(AppLanguage.self, forKey: .language) ?? .english
+        self.exerciseDuration = try container.decodeIfPresent(ExerciseDuration.self, forKey: .exerciseDuration) ?? .thirtySeconds
+        self.longBreakDuration = try container.decodeIfPresent(LongBreakDuration.self, forKey: .longBreakDuration) ?? .threeMinutes
+        self.startBreakShortcut = try container.decodeIfPresent(KeyboardShortcutSetting.self, forKey: .startBreakShortcut) ?? KeyboardShortcutSetting()
         self.hasCompletedOnboarding = try container.decodeIfPresent(Bool.self, forKey: .hasCompletedOnboarding) ?? false
     }
 
