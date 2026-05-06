@@ -41,7 +41,7 @@ public struct PersistenceStore {
     private let store: KeyValueStore
     private let encodeSnapshot: (AppSnapshot) throws -> Data
     private let decoder = JSONDecoder()
-    private static let currentSchemaVersion = 1
+    private static let currentSchemaVersion = 2
 
     public init(
         key: String = "EyePause.snapshot.v1",

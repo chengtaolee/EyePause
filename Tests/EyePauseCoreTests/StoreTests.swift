@@ -26,6 +26,12 @@ final class StoreTests: XCTestCase {
         XCTAssertEqual(AppLanguage.allCases, [.english, .traditionalChinese, .simplifiedChinese, .japanese, .korean])
     }
 
+    func testSettingsDefaultToOnboardingIncomplete() {
+        let settings = SettingsStore()
+
+        XCTAssertFalse(settings.hasCompletedOnboarding)
+    }
+
     func testReminderIntervalTitleUsesSelectedLanguage() {
         XCTAssertEqual(ReminderInterval.twentyFiveMinutes.title(language: .english), "25 min")
         XCTAssertEqual(ReminderInterval.twentyFiveMinutes.title(language: .traditionalChinese), "25分鐘")

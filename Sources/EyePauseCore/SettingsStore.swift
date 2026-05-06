@@ -152,6 +152,7 @@ public struct SettingsStore: Codable, Equatable, Sendable {
     public var exerciseDuration: ExerciseDuration
     public var longBreakDuration: LongBreakDuration
     public var startBreakShortcut: KeyboardShortcutSetting
+    public var hasCompletedOnboarding: Bool
 
     public init(
         interval: ReminderInterval = .twentyFiveMinutes,
@@ -160,7 +161,8 @@ public struct SettingsStore: Codable, Equatable, Sendable {
         language: AppLanguage = .english,
         exerciseDuration: ExerciseDuration = .thirtySeconds,
         longBreakDuration: LongBreakDuration = .threeMinutes,
-        startBreakShortcut: KeyboardShortcutSetting = KeyboardShortcutSetting()
+        startBreakShortcut: KeyboardShortcutSetting = KeyboardShortcutSetting(),
+        hasCompletedOnboarding: Bool = false
     ) {
         self.interval = interval
         self.isForcedModeEnabled = isForcedModeEnabled
@@ -169,6 +171,7 @@ public struct SettingsStore: Codable, Equatable, Sendable {
         self.exerciseDuration = exerciseDuration
         self.longBreakDuration = longBreakDuration
         self.startBreakShortcut = startBreakShortcut
+        self.hasCompletedOnboarding = hasCompletedOnboarding
     }
 
     public func breakDurationSeconds(isLongBreak: Bool) -> Int {

@@ -30,7 +30,7 @@ final class PersistenceTests: XCTestCase {
 
         let data = try XCTUnwrap(memory.data(forKey: key))
         let json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
-        XCTAssertEqual(json["schemaVersion"] as? Int, 1)
+        XCTAssertEqual(json["schemaVersion"] as? Int, 2)
         XCTAssertNotNil(json["snapshot"])
     }
 
