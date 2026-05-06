@@ -25,6 +25,7 @@ final class AppModel: ObservableObject {
     private var exerciseEngine = ExerciseEngine()
     private var skipGate = ForcedSkipGate()
     private let persistence: PersistenceStore
+    private let widgetSnapshotStore = WidgetSnapshotStore()
     private let systemSignal = SystemMeetingSignal()
     private let shortcutController = ShortcutController()
     private let windowCoordinator = WindowCoordinator()
@@ -61,6 +62,7 @@ final class AppModel: ObservableObject {
         installShortcutMonitors()
         installWorkspaceObservers()
         startTimer()
+        publishWidgetSnapshot(now: now)
         showOnboardingIfNeeded()
     }
 
@@ -169,9 +171,11 @@ final class AppModel: ObservableObject {
     }
 
     func setInterval(_ interval: ReminderInterval) {
+        let now = Date()
         settings.interval = interval
-        rebuildEngine(now: Date())
+        rebuildEngine(now: now)
         markDirty()
+        publishWidgetSnapshot(now: now)
         save()
     }
 
@@ -207,8 +211,9 @@ final class AppModel: ObservableObject {
     }
 
     func beginExercise(_ exercise: Exercise) {
+        let now = Date()
         currentExercise = exercise
-        currentBreakIsLong = longBreakPlanner.shouldStartLongBreak(now: Date(), stats: stats)
+        currentBreakIsLong = longBreakPlanner.shouldStartLongBreak(now: now, stats: stats)
         isLongBreakActive = currentBreakIsLong
         remainingExerciseSeconds = currentBreakIsLong ? settings.breakDurationSeconds(isLongBreak: true) : exercise.durationSeconds
         skipInput = ""
@@ -216,11 +221,13 @@ final class AppModel: ObservableObject {
         reminderEngine.beginExercise(exercise)
         state = reminderEngine.state
         presentReminderWindow()
+        publishWidgetSnapshot(now: now)
     }
 
     func completeExercise() {
         guard let exercise = currentExercise else { return }
-        reminderEngine.completeExercise(exercise, now: Date(), stats: &stats)
+        let now = Date()
+        reminderEngine.completeExercise(exercise, now: now, stats: &stats)
         currentExercise = nil
         remainingExerciseSeconds = 0
         state = reminderEngine.state
@@ -233,20 +240,25 @@ final class AppModel: ObservableObject {
         isLongBreakActive = false
         dismissReminderWindow()
         markDirty()
+        publishWidgetSnapshot(now: now)
         save()
     }
 
     func delayCurrentReminder() {
         guard canDelayCurrentReminder else { return }
-        reminderEngine.delay(minutes: 5, now: Date())
+        let now = Date()
+        reminderEngine.delay(minutes: 5, now: now)
         state = reminderEngine.state
         dismissReminderWindow()
+        publishWidgetSnapshot(now: now)
         save()
     }
 
     func pause(minutes: Int) {
-        reminderEngine.pause(minutes: minutes, now: Date())
+        let now = Date()
+        reminderEngine.pause(minutes: minutes, now: now)
         state = reminderEngine.state
+        publishWidgetSnapshot(now: now)
         save()
     }
 
@@ -283,26 +295,31 @@ final class AppModel: ObservableObject {
         }
         handle(events)
         markDirtyIfStatsChanged(events: events, previousDay: previousDay)
+        publishWidgetSnapshot(now: now)
         save()
     }
 
     func skipForcedBreak() {
         guard isForcedPresentation else {
-            reminderEngine.skip(now: Date(), stats: &stats)
+            let now = Date()
+            reminderEngine.skip(now: now, stats: &stats)
             state = reminderEngine.state
             dismissReminderWindow()
             markDirty()
+            publishWidgetSnapshot(now: now)
             save()
             return
         }
 
         if skipGate.canSkip(with: skipInput) {
-            reminderEngine.skip(now: Date(), stats: &stats)
+            let now = Date()
+            reminderEngine.skip(now: now, stats: &stats)
             state = reminderEngine.state
             skipInput = ""
             skipError = nil
             dismissReminderWindow()
             markDirty()
+            publishWidgetSnapshot(now: now)
             save()
         } else {
             skipError = text(.codeMismatch)
@@ -319,10 +336,12 @@ final class AppModel: ObservableObject {
 
         switch state {
         case .due, .escalated:
-            reminderEngine.skip(now: Date(), stats: &stats)
+            let now = Date()
+            reminderEngine.skip(now: now, stats: &stats)
             state = reminderEngine.state
             dismissReminderWindow()
             markDirty()
+            publishWidgetSnapshot(now: now)
             save()
         case .active, .exerciseRunning, .paused, .meetingSuppressed, .forced:
             break
@@ -438,6 +457,7 @@ final class AppModel: ObservableObject {
     private func handleSystemInterruption(now: Date) {
         stats.recordSystemInterruption(now: now)
         markDirty()
+        publishWidgetSnapshot(now: now)
         save()
     }
 
@@ -458,6 +478,7 @@ final class AppModel: ObservableObject {
         state = reminderEngine.state
         handle(events)
         markDirtyIfStatsChanged(events: events, previousDay: previousDay)
+        publishWidgetSnapshot(now: now)
         save()
     }
 
@@ -542,6 +563,30 @@ final class AppModel: ObservableObject {
             needsSave = false
         } catch {
             NSLog("EyePause failed to save snapshot: \(error.localizedDescription)")
+        }
+    }
+
+    private func publishWidgetSnapshot(now: Date) {
+        let nextBreakAt: Date?
+        switch state {
+        case .active:
+            nextBreakAt = reminderEngine.nextReminderDate
+        case .paused(let until):
+            nextBreakAt = until
+        case .due, .escalated, .forced, .exerciseRunning, .meetingSuppressed:
+            nextBreakAt = nil
+        }
+
+        do {
+            try widgetSnapshotStore.save(
+                WidgetSnapshot(
+                    nextBreakAt: nextBreakAt,
+                    status: stateText,
+                    updatedAt: now
+                )
+            )
+        } catch {
+            NSLog("EyePause failed to save widget snapshot: \(error.localizedDescription)")
         }
     }
 
