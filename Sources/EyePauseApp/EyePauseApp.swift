@@ -6,13 +6,9 @@ struct EyePauseApp: App {
     @StateObject private var model = AppModel()
 
     var body: some Scene {
-        MenuBarExtra {
-            MenuBarView(model: model)
-                .frame(width: 280)
-        } label: {
-            Label("EyePause", systemImage: model.menuBarSystemImage)
+        Settings {
+            EmptyView()
         }
-        .menuBarExtraStyle(.window)
     }
 }
 

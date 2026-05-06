@@ -9,7 +9,11 @@ import SwiftUI
 final class AppModel: ObservableObject {
     @Published var settings: SettingsStore
     @Published var stats: StatsStore
-    @Published private(set) var state: ReminderState
+    @Published private(set) var state: ReminderState {
+        didSet {
+            statusItemCoordinator.updateIcon(systemImage: menuBarSystemImage)
+        }
+    }
     @Published var currentExercise: Exercise?
     @Published var remainingExerciseSeconds: Int = 0
     @Published var skipInput: String = ""
@@ -30,6 +34,7 @@ final class AppModel: ObservableObject {
     private let shortcutController = ShortcutController()
     private let windowCoordinator = WindowCoordinator()
     private let notificationAdapter = NotificationCenterAdapter()
+    private let statusItemCoordinator = StatusItemCoordinator()
     private var longBreakPlanner = LongBreakPlanner()
     private var timer: Timer?
     private var workspaceObservers: [NSObjectProtocol] = []
@@ -62,6 +67,7 @@ final class AppModel: ObservableObject {
         installShortcutMonitors()
         installWorkspaceObservers()
         startTimer()
+        installStatusItem()
         publishWidgetSnapshot(now: now)
         showOnboardingIfNeeded()
     }
@@ -416,6 +422,12 @@ final class AppModel: ObservableObject {
             Task { @MainActor in
                 self?.tick(now: Date())
             }
+        }
+    }
+
+    private func installStatusItem() {
+        Task { @MainActor in
+            statusItemCoordinator.install(model: self)
         }
     }
 
