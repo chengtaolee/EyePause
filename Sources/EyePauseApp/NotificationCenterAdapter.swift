@@ -117,11 +117,14 @@ extension NotificationCenterAdapter: UNUserNotificationCenterDelegate {
             action = nil
         }
 
-        if let action {
-            Task { @MainActor in
-                actionHandler?(action)
-            }
+        guard let action else {
+            completionHandler()
+            return
         }
-        completionHandler()
+
+        Task { @MainActor in
+            actionHandler?(action)
+            completionHandler()
+        }
     }
 }
