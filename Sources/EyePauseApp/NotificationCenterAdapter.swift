@@ -13,7 +13,7 @@ final class NotificationCenterAdapter: NSObject {
         static let skip = "EYEPAUSE_SKIP"
     }
 
-    private var actionHandler: ((NotificationAction) -> Void)?
+    private var actionHandler: (@MainActor (NotificationAction) -> Void)?
 
     enum NotificationAction {
         case startBreak
@@ -62,11 +62,7 @@ final class NotificationCenterAdapter: NSObject {
         handler: @escaping @MainActor (NotificationAction) -> Void
     ) {
         guard canUseUserNotifications else { return }
-        actionHandler = { action in
-            Task { @MainActor in
-                handler(action)
-            }
-        }
+        actionHandler = handler
 
         let actions = [
             UNNotificationAction(identifier: ActionIdentifier.startBreak, title: startBreakTitle, options: [.foreground]),
