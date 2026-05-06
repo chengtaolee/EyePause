@@ -154,6 +154,17 @@ public struct SettingsStore: Codable, Equatable, Sendable {
     public var startBreakShortcut: KeyboardShortcutSetting
     public var hasCompletedOnboarding: Bool
 
+    private enum CodingKeys: String, CodingKey {
+        case interval
+        case isForcedModeEnabled
+        case launchAtLoginEnabled
+        case language
+        case exerciseDuration
+        case longBreakDuration
+        case startBreakShortcut
+        case hasCompletedOnboarding
+    }
+
     public init(
         interval: ReminderInterval = .twentyFiveMinutes,
         isForcedModeEnabled: Bool = false,
@@ -172,6 +183,30 @@ public struct SettingsStore: Codable, Equatable, Sendable {
         self.longBreakDuration = longBreakDuration
         self.startBreakShortcut = startBreakShortcut
         self.hasCompletedOnboarding = hasCompletedOnboarding
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.interval = try container.decode(ReminderInterval.self, forKey: .interval)
+        self.isForcedModeEnabled = try container.decode(Bool.self, forKey: .isForcedModeEnabled)
+        self.launchAtLoginEnabled = try container.decode(Bool.self, forKey: .launchAtLoginEnabled)
+        self.language = try container.decode(AppLanguage.self, forKey: .language)
+        self.exerciseDuration = try container.decode(ExerciseDuration.self, forKey: .exerciseDuration)
+        self.longBreakDuration = try container.decode(LongBreakDuration.self, forKey: .longBreakDuration)
+        self.startBreakShortcut = try container.decode(KeyboardShortcutSetting.self, forKey: .startBreakShortcut)
+        self.hasCompletedOnboarding = try container.decodeIfPresent(Bool.self, forKey: .hasCompletedOnboarding) ?? false
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(interval, forKey: .interval)
+        try container.encode(isForcedModeEnabled, forKey: .isForcedModeEnabled)
+        try container.encode(launchAtLoginEnabled, forKey: .launchAtLoginEnabled)
+        try container.encode(language, forKey: .language)
+        try container.encode(exerciseDuration, forKey: .exerciseDuration)
+        try container.encode(longBreakDuration, forKey: .longBreakDuration)
+        try container.encode(startBreakShortcut, forKey: .startBreakShortcut)
+        try container.encode(hasCompletedOnboarding, forKey: .hasCompletedOnboarding)
     }
 
     public func breakDurationSeconds(isLongBreak: Bool) -> Int {

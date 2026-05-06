@@ -60,7 +60,7 @@ public struct PersistenceStore {
 
         do {
             let versioned = try decoder.decode(VersionedSnapshot.self, from: data)
-            guard versioned.schemaVersion == Self.currentSchemaVersion else {
+            guard versioned.schemaVersion >= 1 && versioned.schemaVersion <= Self.currentSchemaVersion else {
                 NSLog("EyePause unsupported persistence schema version: \(versioned.schemaVersion)")
                 return AppSnapshot()
             }
