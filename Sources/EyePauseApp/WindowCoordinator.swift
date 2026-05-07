@@ -76,7 +76,7 @@ final class WindowCoordinator {
     }
 
     private func makeReminderWindow(title: String, level: NSWindow.Level, frame: NSRect) -> NSWindow {
-        let window = NSWindow(
+        let window = ReminderWindow(
             contentRect: frame,
             styleMask: [.borderless],
             backing: .buffered,
@@ -118,4 +118,9 @@ final class WindowCoordinator {
         let screen = NSScreen.screens.first { NSMouseInRect(mouseLocation, $0.frame, false) } ?? NSScreen.main
         return screen?.frame ?? NSRect(x: 0, y: 0, width: 1280, height: 800)
     }
+}
+
+private final class ReminderWindow: NSWindow {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
 }

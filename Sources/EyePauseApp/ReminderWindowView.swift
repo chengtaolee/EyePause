@@ -5,6 +5,7 @@ struct ReminderWindowView: View {
     @ObservedObject var model: AppModel
     @State private var blinkGlow = false
     @State private var forcedSkipAvailableAt = Date().addingTimeInterval(15)
+    @FocusState private var isSkipCodeFocused: Bool
 
     var body: some View {
         GeometryReader { geometry in
@@ -222,6 +223,10 @@ struct ReminderWindowView: View {
                     TextField("Code", text: $model.skipInput)
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 120)
+                        .focused($isSkipCodeFocused)
+                        .onAppear {
+                            isSkipCodeFocused = true
+                        }
                     Button(model.text(.skipForcedBreak)) {
                         model.skipForcedBreak()
                     }
