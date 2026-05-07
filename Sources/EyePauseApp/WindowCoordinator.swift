@@ -1,4 +1,5 @@
 import AppKit
+import EyePauseCore
 import SwiftUI
 
 @MainActor
@@ -7,8 +8,15 @@ final class WindowCoordinator {
     private var settingsWindow: NSWindow?
     private var onboardingWindow: NSWindow?
 
-    func presentReminderWindow(model: AppModel, isForcedPresentation: Bool) {
-        let frame = reminderWindowFrame(isForcedPresentation: isForcedPresentation)
+    func presentReminderWindow(
+        model: AppModel,
+        isForcedPresentation: Bool,
+        presentationMode: BreakWindowPresentationMode
+    ) {
+        let frame = reminderWindowFrame(
+            isForcedPresentation: isForcedPresentation,
+            presentationMode: presentationMode
+        )
         let window = reminderWindow ?? makeReminderWindow(
             title: "EyePause Reminder",
             level: isForcedPresentation ? .screenSaver : .floating,
@@ -83,9 +91,13 @@ final class WindowCoordinator {
         return window
     }
 
-    private func reminderWindowFrame(isForcedPresentation: Bool) -> NSRect {
+    private func reminderWindowFrame(
+        isForcedPresentation: Bool,
+        presentationMode: BreakWindowPresentationMode
+    ) -> NSRect {
         let screenFrame = targetScreenFrame()
-        guard !isForcedPresentation else { return screenFrame }
+        let shouldUseFullScreen = isForcedPresentation || presentationMode == .fullScreen
+        guard !shouldUseFullScreen else { return screenFrame }
         let width = min(560, screenFrame.width * 0.9)
         let height = min(420, screenFrame.height * 0.8)
         return NSRect(

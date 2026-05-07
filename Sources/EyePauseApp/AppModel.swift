@@ -207,6 +207,12 @@ final class AppModel: ObservableObject {
         save()
     }
 
+    func setBreakWindowPresentationMode(_ mode: BreakWindowPresentationMode) {
+        settings.breakWindowPresentationMode = mode
+        markDirty()
+        save()
+    }
+
     func toggleForcedMode() {
         settings.isForcedModeEnabled.toggle()
         reminderEngine.settings = settings
@@ -638,7 +644,11 @@ final class AppModel: ObservableObject {
     }
 
     private func presentReminderWindow() {
-        windowCoordinator.presentReminderWindow(model: self, isForcedPresentation: isForcedPresentation)
+        windowCoordinator.presentReminderWindow(
+            model: self,
+            isForcedPresentation: isForcedPresentation,
+            presentationMode: settings.breakWindowPresentationMode
+        )
     }
 
     private func presentSettingsWindow() {

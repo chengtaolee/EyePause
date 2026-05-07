@@ -62,6 +62,19 @@ struct SettingsView: View {
                         .frame(width: 180, alignment: .leading)
                     }
 
+                    settingRow(model.text(.breakWindowPresentation)) {
+                        Picker(model.text(.breakWindowPresentation), selection: Binding(
+                            get: { model.settings.breakWindowPresentationMode },
+                            set: { model.setBreakWindowPresentationMode($0) }
+                        )) {
+                            ForEach(BreakWindowPresentationMode.allCases) { mode in
+                                Text(mode.title(language: model.settings.language)).tag(mode)
+                            }
+                        }
+                        .labelsHidden()
+                        .frame(width: 180, alignment: .leading)
+                    }
+
                     Divider()
 
                     VStack(alignment: .leading, spacing: 8) {

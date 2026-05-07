@@ -32,6 +32,26 @@ final class StoreTests: XCTestCase {
         XCTAssertFalse(settings.hasCompletedOnboarding)
     }
 
+    func testSettingsStoreDefaultsBreakWindowPresentationToCenteredWindow() {
+        let settings = SettingsStore()
+
+        XCTAssertEqual(settings.breakWindowPresentationMode, .centeredWindow)
+    }
+
+    func testSettingsStoreDecodesMissingBreakWindowPresentationModeAsCenteredWindow() throws {
+        let json = """
+        {
+          "interval": 25,
+          "isForcedModeEnabled": false
+        }
+        """
+        let data = try XCTUnwrap(json.data(using: .utf8))
+
+        let settings = try JSONDecoder().decode(SettingsStore.self, from: data)
+
+        XCTAssertEqual(settings.breakWindowPresentationMode, .centeredWindow)
+    }
+
     func testReminderIntervalTitleUsesSelectedLanguage() {
         XCTAssertEqual(ReminderInterval.twentyFiveMinutes.title(language: .english), "25 min")
         XCTAssertEqual(ReminderInterval.twentyFiveMinutes.title(language: .traditionalChinese), "25分鐘")

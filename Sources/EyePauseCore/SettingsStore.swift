@@ -88,6 +88,44 @@ public enum LongBreakDuration: Int, CaseIterable, Codable, Equatable, Identifiab
     }
 }
 
+public enum BreakWindowPresentationMode: String, CaseIterable, Codable, Equatable, Identifiable, Sendable {
+    case centeredWindow
+    case fullScreen
+
+    public var id: String { rawValue }
+
+    public func title(language: AppLanguage) -> String {
+        switch self {
+        case .centeredWindow:
+            switch language {
+            case .english:
+                return "Centered window"
+            case .traditionalChinese:
+                return "置中視窗"
+            case .simplifiedChinese:
+                return "居中窗口"
+            case .japanese:
+                return "中央ウィンドウ"
+            case .korean:
+                return "가운데 창"
+            }
+        case .fullScreen:
+            switch language {
+            case .english:
+                return "Full screen"
+            case .traditionalChinese:
+                return "滿版全螢幕"
+            case .simplifiedChinese:
+                return "全屏满版"
+            case .japanese:
+                return "全画面"
+            case .korean:
+                return "전체 화면"
+            }
+        }
+    }
+}
+
 public enum KeyboardShortcutModifier: String, Codable, Equatable, CaseIterable, Sendable {
     case control
     case option
@@ -151,6 +189,7 @@ public struct SettingsStore: Codable, Equatable, Sendable {
     public var language: AppLanguage
     public var exerciseDuration: ExerciseDuration
     public var longBreakDuration: LongBreakDuration
+    public var breakWindowPresentationMode: BreakWindowPresentationMode
     public var startBreakShortcut: KeyboardShortcutSetting
     public var hasCompletedOnboarding: Bool
 
@@ -161,6 +200,7 @@ public struct SettingsStore: Codable, Equatable, Sendable {
         case language
         case exerciseDuration
         case longBreakDuration
+        case breakWindowPresentationMode
         case startBreakShortcut
         case hasCompletedOnboarding
     }
@@ -172,6 +212,7 @@ public struct SettingsStore: Codable, Equatable, Sendable {
         language: AppLanguage = .english,
         exerciseDuration: ExerciseDuration = .thirtySeconds,
         longBreakDuration: LongBreakDuration = .threeMinutes,
+        breakWindowPresentationMode: BreakWindowPresentationMode = .centeredWindow,
         startBreakShortcut: KeyboardShortcutSetting = KeyboardShortcutSetting(),
         hasCompletedOnboarding: Bool = false
     ) {
@@ -181,6 +222,7 @@ public struct SettingsStore: Codable, Equatable, Sendable {
         self.language = language
         self.exerciseDuration = exerciseDuration
         self.longBreakDuration = longBreakDuration
+        self.breakWindowPresentationMode = breakWindowPresentationMode
         self.startBreakShortcut = startBreakShortcut
         self.hasCompletedOnboarding = hasCompletedOnboarding
     }
@@ -193,6 +235,7 @@ public struct SettingsStore: Codable, Equatable, Sendable {
         self.language = try container.decodeIfPresent(AppLanguage.self, forKey: .language) ?? .english
         self.exerciseDuration = try container.decodeIfPresent(ExerciseDuration.self, forKey: .exerciseDuration) ?? .thirtySeconds
         self.longBreakDuration = try container.decodeIfPresent(LongBreakDuration.self, forKey: .longBreakDuration) ?? .threeMinutes
+        self.breakWindowPresentationMode = try container.decodeIfPresent(BreakWindowPresentationMode.self, forKey: .breakWindowPresentationMode) ?? .centeredWindow
         self.startBreakShortcut = try container.decodeIfPresent(KeyboardShortcutSetting.self, forKey: .startBreakShortcut) ?? KeyboardShortcutSetting()
         self.hasCompletedOnboarding = try container.decodeIfPresent(Bool.self, forKey: .hasCompletedOnboarding) ?? false
     }
@@ -205,6 +248,7 @@ public struct SettingsStore: Codable, Equatable, Sendable {
         try container.encode(language, forKey: .language)
         try container.encode(exerciseDuration, forKey: .exerciseDuration)
         try container.encode(longBreakDuration, forKey: .longBreakDuration)
+        try container.encode(breakWindowPresentationMode, forKey: .breakWindowPresentationMode)
         try container.encode(startBreakShortcut, forKey: .startBreakShortcut)
         try container.encode(hasCompletedOnboarding, forKey: .hasCompletedOnboarding)
     }

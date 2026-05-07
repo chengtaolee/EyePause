@@ -49,6 +49,7 @@ enum AppString: String, Sendable {
     case closeEyesSubtitle
     case exerciseDuration
     case longBreakDuration
+    case breakWindowPresentation
     case startBreakShortcut
     case recordShortcut
     case clearShortcut
@@ -143,6 +144,7 @@ struct AppStrings {
             ,
             .exerciseDuration: "Exercise duration",
             .longBreakDuration: "Long break duration",
+            .breakWindowPresentation: "Break screen",
             .startBreakShortcut: "Start break shortcut",
             .recordShortcut: "Record shortcut",
             .clearShortcut: "Clear shortcut",
@@ -230,6 +232,7 @@ struct AppStrings {
             ,
             .exerciseDuration: "練習時間",
             .longBreakDuration: "長休息時間",
+            .breakWindowPresentation: "休息畫面",
             .startBreakShortcut: "立即休息快捷鍵",
             .recordShortcut: "錄製快捷鍵",
             .clearShortcut: "清除快捷鍵",
@@ -317,6 +320,7 @@ struct AppStrings {
             ,
             .exerciseDuration: "练习时间",
             .longBreakDuration: "长休息时间",
+            .breakWindowPresentation: "休息画面",
             .startBreakShortcut: "立即休息快捷键",
             .recordShortcut: "录制快捷键",
             .clearShortcut: "清除快捷键",
@@ -404,6 +408,7 @@ struct AppStrings {
             ,
             .exerciseDuration: "エクササイズ時間",
             .longBreakDuration: "長めの休憩時間",
+            .breakWindowPresentation: "休憩画面",
             .startBreakShortcut: "今すぐ休憩ショートカット",
             .recordShortcut: "ショートカットを記録",
             .clearShortcut: "ショートカットを削除",
@@ -491,6 +496,7 @@ struct AppStrings {
             ,
             .exerciseDuration: "운동 시간",
             .longBreakDuration: "긴 휴식 시간",
+            .breakWindowPresentation: "휴식 화면",
             .startBreakShortcut: "즉시 휴식 단축키",
             .recordShortcut: "단축키 기록",
             .clearShortcut: "단축키 지우기",
