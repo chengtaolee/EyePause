@@ -31,13 +31,19 @@ struct DashboardView: View {
                 dashboardCard(model.text(.quickActions)) {
                     LazyVGrid(columns: actionColumns, spacing: 8) {
                         Button(model.text(.startBreakNow)) { model.startBreakNow() }
+                            .frame(maxWidth: .infinity)
                         Button(model.text(.delayFiveMinutes)) { model.delayCurrentReminder() }
                             .disabled(!model.canDelayCurrentReminder)
+                            .frame(maxWidth: .infinity)
                         Button(model.text(.focusOneHour)) { model.focusOneHour() }
+                            .frame(maxWidth: .infinity)
                         Button(model.text(.pauseTenMinutes)) { model.pause(minutes: 10) }
+                            .frame(maxWidth: .infinity)
                         Button(model.text(.pauseToday)) { model.pauseToday() }
+                            .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
+                    .controlSize(.large)
                 }
 
                 dashboardCard(model.text(.statistics)) {
@@ -82,8 +88,8 @@ struct DashboardView: View {
 
     private var actionColumns: [GridItem] {
         [
-            GridItem(.flexible(minimum: 90), spacing: 8),
-            GridItem(.flexible(minimum: 90), spacing: 8)
+            GridItem(.flexible(minimum: 130), spacing: 8),
+            GridItem(.flexible(minimum: 130), spacing: 8)
         ]
     }
 
@@ -91,7 +97,7 @@ struct DashboardView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title.uppercased())
                 .font(.caption.weight(.bold))
-                .foregroundStyle(Color(red: 0.16, green: 0.34, blue: 0.24))
+                .foregroundStyle(.secondary)
             content()
         }
         .padding(14)

@@ -52,6 +52,7 @@ enum AppString: String, Sendable {
     case startBreakShortcut
     case recordShortcut
     case clearShortcut
+    case recordingShortcutPrompt
     case noShortcut
     case longBreakTitle
     case longBreakSubtitle
@@ -145,6 +146,7 @@ struct AppStrings {
             .startBreakShortcut: "Start break shortcut",
             .recordShortcut: "Record shortcut",
             .clearShortcut: "Clear shortcut",
+            .recordingShortcutPrompt: "Press the new shortcut.",
             .noShortcut: "Not set",
             .longBreakTitle: "Long Rest",
             .longBreakSubtitle: "A longer pause is due. Let your eyes fully reset.",
@@ -231,6 +233,7 @@ struct AppStrings {
             .startBreakShortcut: "立即休息快捷鍵",
             .recordShortcut: "錄製快捷鍵",
             .clearShortcut: "清除快捷鍵",
+            .recordingShortcutPrompt: "請按下新的快捷鍵。",
             .noShortcut: "未設定",
             .longBreakTitle: "長休息",
             .longBreakSubtitle: "該做一次較長的休息了，讓眼睛完整放鬆。",
@@ -317,6 +320,7 @@ struct AppStrings {
             .startBreakShortcut: "立即休息快捷键",
             .recordShortcut: "录制快捷键",
             .clearShortcut: "清除快捷键",
+            .recordingShortcutPrompt: "请按下新的快捷键。",
             .noShortcut: "未设置",
             .longBreakTitle: "长休息",
             .longBreakSubtitle: "该做一次较长的休息了，让眼睛完整放松。",
@@ -403,6 +407,7 @@ struct AppStrings {
             .startBreakShortcut: "今すぐ休憩ショートカット",
             .recordShortcut: "ショートカットを記録",
             .clearShortcut: "ショートカットを削除",
+            .recordingShortcutPrompt: "新しいショートカットを押してください。",
             .noShortcut: "未設定",
             .longBreakTitle: "長めの休憩",
             .longBreakSubtitle: "長めの休憩の時間です。目をしっかり休ませましょう。",
@@ -489,6 +494,7 @@ struct AppStrings {
             .startBreakShortcut: "즉시 휴식 단축키",
             .recordShortcut: "단축키 기록",
             .clearShortcut: "단축키 지우기",
+            .recordingShortcutPrompt: "새 단축키를 누르세요.",
             .noShortcut: "설정 안 됨",
             .longBreakTitle: "긴 휴식",
             .longBreakSubtitle: "긴 휴식이 필요합니다. 눈을 충분히 쉬게 하세요.",
