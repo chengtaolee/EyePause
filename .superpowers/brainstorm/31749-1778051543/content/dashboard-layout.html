@@ -1,0 +1,69 @@
+<h2>EyePause Dashboard proposal</h2>
+<p class="subtitle">A compact settings-window dashboard with higher contrast so the hierarchy is easier to review.</p>
+
+<div class="mockup">
+  <div class="mockup-header">Settings window: Dashboard tab</div>
+  <div class="mockup-body">
+    <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:16px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;">
+      <section style="border:1px solid #a8b9ad;border-radius:8px;padding:14px;background:#ffffff;color:#122017;">
+        <div style="font-size:12px;color:#31563f;text-transform:uppercase;letter-spacing:.04em;font-weight:700;">Now</div>
+        <div style="font-size:24px;font-weight:700;margin-top:6px;color:#0b1710;">Active</div>
+        <div style="font-size:15px;color:#1d3326;margin-top:6px;font-weight:600;">Next break in 18 min</div>
+        <div style="font-size:13px;color:#30483a;margin-top:10px;">Likely meeting active / manual meeting until 15:30 when relevant</div>
+      </section>
+
+      <section style="border:1px solid #a8b9ad;border-radius:8px;padding:14px;background:#ffffff;color:#122017;">
+        <div style="font-size:12px;color:#31563f;text-transform:uppercase;letter-spacing:.04em;font-weight:700;">Quick actions</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+          <button>Start break</button>
+          <button>Delay 5 min</button>
+          <button>Focus 1 hour</button>
+          <button>Pause today</button>
+        </div>
+      </section>
+
+      <section style="border:1px solid #a8b9ad;border-radius:8px;padding:14px;background:#ffffff;color:#122017;">
+        <div style="font-size:12px;color:#31563f;text-transform:uppercase;letter-spacing:.04em;font-weight:700;">Today</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;">
+          <div><strong style="color:#0b1710;">4</strong><br><span style="color:#30483a">completed</span></div>
+          <div><strong style="color:#0b1710;">1</strong><br><span style="color:#30483a">skipped</span></div>
+          <div><strong style="color:#0b1710;">80%</strong><br><span style="color:#30483a">completion</span></div>
+        </div>
+        <div style="height:46px;margin-top:14px;display:flex;align-items:end;gap:5px;">
+          <div style="height:20px;width:18px;background:#5f9b73"></div>
+          <div style="height:34px;width:18px;background:#5f9b73"></div>
+          <div style="height:26px;width:18px;background:#5f9b73"></div>
+          <div style="height:42px;width:18px;background:#5f9b73"></div>
+          <div style="height:16px;width:18px;background:#5f9b73"></div>
+          <div style="height:30px;width:18px;background:#5f9b73"></div>
+          <div style="height:38px;width:18px;background:#1d6b3c"></div>
+        </div>
+      </section>
+
+      <section style="border:1px solid #a8b9ad;border-radius:8px;padding:14px;background:#ffffff;color:#122017;">
+        <div style="font-size:12px;color:#31563f;text-transform:uppercase;letter-spacing:.04em;font-weight:700;">Break plan</div>
+        <div style="margin-top:10px;color:#0b1710;font-weight:600;">Long break in 2 short breaks</div>
+        <progress value="2" max="4" style="width:100%;margin-top:8px;"></progress>
+        <div style="font-size:13px;color:#30483a;margin-top:12px;">Exercises show step-by-step guidance during the reminder window.</div>
+      </section>
+
+      <section style="grid-column:1 / span 2;border:1px solid #a8b9ad;border-radius:8px;padding:14px;background:#ffffff;color:#122017;">
+        <div style="font-size:12px;color:#31563f;text-transform:uppercase;letter-spacing:.04em;font-weight:700;">System notes</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;color:#24382c;">
+          <div><strong>Notifications</strong><br>Shows permission state and notes that SwiftPM runs use the prominent window fallback.</div>
+          <div><strong>Meeting mode</strong><br>Explains that foreground app detection is a best-effort signal; manual meeting mode remains the reliable control.</div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="approve-dashboard-layout" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content">
+      <h3>Use this dashboard structure</h3>
+      <p>Keep it compact and implement it inside the existing settings window.</p>
+    </div>
+  </div>
+</div>
