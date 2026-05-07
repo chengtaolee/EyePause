@@ -3,7 +3,6 @@ import SwiftUI
 @main
 struct EyePauseApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @StateObject private var model = AppModel()
 
     var body: some Scene {
         Settings {
@@ -12,8 +11,12 @@ struct EyePauseApp: App {
     }
 }
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    private var model: AppModel?
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
+        model = AppModel()
     }
 }

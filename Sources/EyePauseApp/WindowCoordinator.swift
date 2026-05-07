@@ -46,6 +46,7 @@ final class WindowCoordinator {
 
     func dismissReminderWindow() {
         reminderWindow?.orderOut(nil)
+        NSApp.setActivationPolicy(.accessory)
     }
 
     func dismissOnboardingWindow() {

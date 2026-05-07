@@ -426,9 +426,7 @@ final class AppModel: ObservableObject {
     }
 
     private func installStatusItem() {
-        Task { @MainActor in
-            statusItemCoordinator.install(model: self)
-        }
+        statusItemCoordinator.install(model: self)
     }
 
     private func installShortcutMonitors() {
